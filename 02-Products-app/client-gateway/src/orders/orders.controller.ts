@@ -11,22 +11,20 @@ import {
 } from '@nestjs/common';
 
 import { ClientProxy, RpcException } from '@nestjs/microservices';
-import { ORDERS_SERVICE } from 'src/config';
+import { NATS_SERVICE } from 'src/config';
 import { firstValueFrom } from 'rxjs';
 import { CreateOrderDto, OrderPaginationDTO, StatusDto } from './dto';
 import { PaginationDto } from 'src/commons';
 
 @Controller('orders')
 export class OrdersController {
-  constructor(
-    @Inject(ORDERS_SERVICE) private readonly ordersClient: ClientProxy,
-  ) {}
+  constructor(@Inject(NATS_SERVICE) private readonly client: ClientProxy) {}
 
   @Post()
   async create(@Body() createOrderDto: CreateOrderDto) {
     try {
       const newProduct = await firstValueFrom(
-        this.ordersClient.send('createOrder', createOrderDto),
+        this.client.send('createOrder', createOrderDto),
       );
       return newProduct;
     } catch (error) {
@@ -38,7 +36,7 @@ export class OrdersController {
   async findAll(@Query() orderPaginationDTO: OrderPaginationDTO) {
     try {
       const newProduct = await firstValueFrom(
-        this.ordersClient.send('findAllOrders', orderPaginationDTO),
+        this.client.send('findAllOrders', orderPaginationDTO),
       );
       return newProduct;
     } catch (error) {
@@ -50,7 +48,7 @@ export class OrdersController {
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
     try {
       const order = await firstValueFrom(
-        this.ordersClient.send('findOneOrder', { id }),
+        this.client.send('findOneOrder', { id }),
       );
       return order;
     } catch (error) {
@@ -65,7 +63,7 @@ export class OrdersController {
   ) {
     try {
       const newProduct = await firstValueFrom(
-        this.ordersClient.send('findAllOrders', {
+        this.client.send('findAllOrders', {
           ...paginationDto,
           status: statusDTO.status,
         }),
@@ -83,7 +81,7 @@ export class OrdersController {
   ) {
     try {
       const newProduct = await firstValueFrom(
-        this.ordersClient.send('changeOrderStatus', {
+        this.client.send('changeOrderStatus', {
           ...statusDto,
         }),
       );

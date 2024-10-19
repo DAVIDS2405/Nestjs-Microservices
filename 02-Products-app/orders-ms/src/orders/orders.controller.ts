@@ -13,25 +13,25 @@ import {
 
 @Controller()
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) {}
+  constructor(private readonly client: OrdersService) {}
 
   @MessagePattern('createOrder')
   create(@Payload() createOrderDto: CreateOrderDto) {
-    return this.ordersService.create(createOrderDto);
+    return this.client.create(createOrderDto);
   }
 
   @MessagePattern('findAllOrders')
   findAll(@Payload() orderPaginationDTO: OrderPaginationDTO) {
-    return this.ordersService.findAll(orderPaginationDTO);
+    return this.client.findAll(orderPaginationDTO);
   }
 
   @MessagePattern('findOneOrder')
   findOne(@Payload('id', ParseUUIDPipe) id: string) {
-    return this.ordersService.findOne(id);
+    return this.client.findOne(id);
   }
 
   @MessagePattern('changeOrderStatus')
   changeOrderStatus(@Payload() changeOrderStatus: ChangeOrderStatusDto) {
-    return this.ordersService.changeStatus(changeOrderStatus);
+    return this.client.changeStatus(changeOrderStatus);
   }
 }
